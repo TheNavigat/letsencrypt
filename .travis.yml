@@ -63,12 +63,11 @@ matrix:
       env: TOXENV=py35
     - os: osx
       osx_image: xcode7.3
-      sudo: required
       language: generic
       env: TOXENV=cover
-      before_install: "travis_retry brew install python augeas dialog"
-      install: "travis_retry pip install tox coveralls"
-      script: 'travis_retry tox && ([ "xxx$BOULDER_INTEGRATION" = "xxx" ] || ./tests/travis-integration.sh)'
+      before_install:
+        - "travis_retry brew update"
+        - "travis_retry brew install python augeas dialog"
 
 # Only build pushes to the master branch, PRs, and branches beginning with
 # `test-`. This reduces the number of simultaneous Travis runs, which speeds
