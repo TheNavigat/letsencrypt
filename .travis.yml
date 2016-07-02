@@ -66,7 +66,6 @@ matrix:
       language: generic
       env: TOXENV=cover
       before_install:
-        - "travis_retry brew update"
         - "travis_retry brew install python augeas dialog"
 
 # Only build pushes to the master branch, PRs, and branches beginning with
