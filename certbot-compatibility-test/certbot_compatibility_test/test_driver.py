@@ -125,6 +125,8 @@ def test_installer(args, plugin, config, temp_dir):
         logger.error("get_all_names test failed for config %s", config)
 
     domains = list(plugin.get_testable_domain_names())
+    logger.info("Test info")
+    logger.info(domains)
     success = test_deploy_cert(plugin, temp_dir, domains)
 
     if success and args.enhance:
