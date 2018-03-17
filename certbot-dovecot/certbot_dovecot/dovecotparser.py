@@ -122,16 +122,18 @@ class RawDovecotDumper(object):
 
     def parseItem(self, item):
         """Parses a single item and yields line by line."""
-        if len(item) == 2 and isinstance(item[1], list):
+        if (len(item) == 3
+            and all(isinstance(e, list) for e in item)
+        ):
             # Block
-            yield "".join(item[0]) + '{' + '\n'
+            yield "".join(item[0]) + '\n'
 
             # Yield block contents
             for i in item[1]:
                 for j in self.parseItem(i):
                     yield j
 
-            yield '}' + '\n'
+            yield "".join(item[2]) + '\n'
         elif isinstance(item, list):
             # Not a block
             yield "".join(item) + '\n'

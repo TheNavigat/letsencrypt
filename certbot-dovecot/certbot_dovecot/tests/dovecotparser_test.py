@@ -148,6 +148,23 @@ class DovecotParserTest(unittest.TestCase):
 
         self.assertEqual(parsed, result)
 
+    def test_equality(self):
+        original_tree = [[
+          ['   ', 'block', '    ', '{', '    '],
+          [
+            ['\n\n  \n\n   ', 'x', ' ', '=', '     ', 'y', '    '],
+            ['\n   ', 'a', '     ', '=', '      ', 'b', '       ']
+          ],
+          ['  ', '}', '   ']
+        ]]
+
+        result = str(RawDovecotDumper(original_tree))
+
+        parser_instance = DovecotParser()
+        tree = parser_instance.parse_string(result).asList()
+
+        self.assertEqual(tree, original_tree)
+
     def test_parse_file(self):
         m = mock.mock_open(read_data='x = y\n')
 
@@ -181,8 +198,9 @@ class RawDovecotDumperTest(unittest.TestCase):
     def test_empty_block(self):
         tree = [
                  [
-                   ['block', ' '],
-                   []
+                   ['block', ' ', '{'],
+                   [],
+                   ['}']
                  ]
                ]
 
@@ -195,8 +213,9 @@ class RawDovecotDumperTest(unittest.TestCase):
     def test_block_with_key_value(self):
         tree = [
                  [
-                   ['block', ' '],
+                   ['block', ' ', '{'],
                    [['x', ' ', '=', ' ', 'a']],
+                   ['}']
                  ]
                ]
 
@@ -212,14 +231,16 @@ class RawDovecotDumperTest(unittest.TestCase):
 
     def test_nested_blocks(self):
         tree = [[
-                  ['block', ' '],
+                  ['block', ' ', '{'],
                   [
                     [
-                      ['block', ' '],
+                      ['block', ' ', '{'],
                       [['x', ' ', '=', ' ', 'y']],
+                      ['}']
                     ],
                     '\n'
-                  ]
+                  ],
+                  ['}']
                 ]]
 
         result = (
@@ -252,15 +273,17 @@ class RawDovecotDumperTest(unittest.TestCase):
           ['x', ' ', '=', ' ', 'y'],
           ['!include', ' ', 'test'],
           [
-            ['block1', ' '],
+            ['block1', ' ', '{'],
             [
               ['a', ' ', '=', ' ', 'b'],
               [
-                ['block2', ' '],
+                ['block2', ' ', '{'],
                 [['c', ' ', '=', ' ', 'd']],
+                ['}']
               ],
               ['!include_try', ' ', 'test2']
-            ]
+            ],
+            ['}']
           ]
         ]
 
@@ -279,6 +302,21 @@ class RawDovecotDumperTest(unittest.TestCase):
         parsed = str(RawDovecotDumper(tree))
 
         self.assertEqual(parsed, result)
+
+    def test_equality(self):
+        string = (
+            "   block    {    \n"
+            "\n\n  \n\n   x =     y    \n"
+            "\n   a     =      b       \n"
+            "  }   \n"
+        )
+
+        parser_instance = DovecotParser()
+        tree = parser_instance.parse_string(string).asList()
+
+        result = str(RawDovecotDumper(tree))
+
+        self.assertEqual(result, string)
 
 if __name__ == "__main__":
     unittest.main()  # pragma: no cover
